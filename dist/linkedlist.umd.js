@@ -1,5 +1,5 @@
 /*!
-  * @gahabeen/linkedlist v0.1.2
+  * @gahabeen/linkedlist v0.1.3
   * (c) 2020 Gabin Desserprit
   * @license MIT
   */
@@ -19,8 +19,10 @@
       this._lost = [];
 
       this._getId = getId;
+      this._hasId = (item) => typeof this._getId(item) === 'string';
       this._getNextId = getNextId;
       this._setNextId = setNextId;
+      this._watch = () => null;
     }
 
     get list() {
@@ -37,8 +39,18 @@
       }
     }
 
+    _inspectListLength() {
+      let length = this._list.length;
+      return () => {
+        return this._list.length - length
+      }
+    }
+
     _init(list) {
-      const ids = list.map(this._getId);
+      const ids = list.map((item) => {
+        this._checkItem(item);
+        return this._getId(item)
+      });
       const registry = new Map();
       let sorted = [];
       const unsorted = new Map();
@@ -96,42 +108,53 @@
       }
     }
 
+    _checkItem(item) {
+      if (item && !this._hasId(item)) {
+        /* istanbul ignore next */
+        throw new Error(`Provided item doesn't contain a proper id field.`)
+      }
+    }
+
     _referencePreviousItem(item, previous) {
+      this._checkItem(item);
+
       this._setNextId(previous, this._getId(item));
     }
 
     _referenceNextItem(item, next) {
+      this._checkItem(item);
+
       this._setNextId(item, this._getId(next));
+    }
+
+    // This is actually covered
+    /* istanbul ignore next*/
+    watch(callback = ({ list: [], lost: [] }) => null, { immediate = true } = {}) {
+      this._watch = callback;
+      if (immediate) this.emit();
+      return this
+    }
+
+    emit() {
+      this._watch({ list: this._list, lost: this._lost });
     }
 
     init(items = []) {
       const { list, lost } = this._init(items.length > 0 ? items : this._list);
       this._list = list;
       this._lost = lost;
-      return this
-    }
+      this.emit();
 
-    push(item) {
-      const lastItem = this._list[this._list.length - 1];
-      this._defaultNextId(item);
-      this._referencePreviousItem(item, lastItem);
-      this._list.push(item);
-      return this
-    }
-
-    unshift(item) {
-      const firstItem = this._list[0];
-      this._defaultNextId(item);
-      this._referenceNextItem(item, firstItem);
-      this._list.unshift(item);
       return this
     }
 
     insert(item, index) {
+      const inspectListLength = this._inspectListLength();
+
+      this._checkItem(item);
+
       const previousItem = this._list[index - 1];
       const nextItem = this._list[index];
-
-      this._defaultNextId(item);
 
       if (previousItem) {
         this._referencePreviousItem(item, previousItem);
@@ -139,29 +162,86 @@
 
       if (nextItem) {
         this._referenceNextItem(item, nextItem);
+      } else {
+        this._setNextId(item, null);
       }
 
       this._list.splice(index, 0, item);
-      return this
-    }
 
-    move(oldIndex, newIndex) {
-      const item = this._list[oldIndex];
-      this.remove(oldIndex);
-      this.insert(item, newIndex);
+      const difference = inspectListLength();
+      if (difference <= 0) {
+        /* istanbul ignore next */
+        console.warn(`insert() should have added a new item to the list (+1), instead the difference is '${difference}'`);
+      }
+
+      this.emit();
+
       return this
     }
 
     remove(index) {
+      const inspectListLength = this._inspectListLength();
+
       const previousItem = this._list[index - 1];
       const nextItem = this._list[index + 1];
 
       if (previousItem) {
-        this._referencePreviousItem(nextItem, previousItem);
+        this._setNextId(previousItem, null);
+        if (nextItem) {
+          this._referencePreviousItem(nextItem, previousItem);
+        }
       }
 
       this._list.splice(index, 1);
+
+      const difference = inspectListLength();
+      if (difference >= 0) {
+        /* istanbul ignore next */
+        console.warn(`remove() should have removed an item from the list (-1), instead the difference is '${difference}'`);
+      }
+
+      this.emit();
+
       return this
+    }
+
+    move(oldIndex, newIndex) {
+      const inspectListLength = this._inspectListLength();
+
+      const item = this._list[oldIndex];
+      this.remove(oldIndex);
+      this.insert(item, newIndex);
+
+      const difference = inspectListLength();
+      if (difference !== 0) {
+        /* istanbul ignore next */
+        console.warn(`move() should have moved an item within the list (0), instead the difference is '${difference}'`);
+      }
+
+      return this
+    }
+
+    push(item) {
+      this.insert(item, this._list.length);
+      return this
+    }
+
+    unshift(item) {
+      this.insert(item, 0);
+      return this
+    }
+
+    pop() {
+      const lastIndex = this._list.length - 1;
+      const item = this._list[lastIndex];
+      this.remove(lastIndex);
+      return item
+    }
+
+    shift() {
+      const item = this._list[0];
+      this.remove(0);
+      return item
     }
   }
 
