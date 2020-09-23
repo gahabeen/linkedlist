@@ -1,5 +1,6 @@
 {
   "name": "@gahabeen/linkedlist",
+  "description": "Handle linked objects as flat list",
   "version": "0.1.0",
   "main": "dist/linkedlist.js",
   "module": "dist/linkedlist.esm.js",
@@ -11,6 +12,9 @@
   },
   "author": "Gabin Desserprit <desserprit.gabin@gmail.com>",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "rollup -c rollup.config.js",
     "dev": "rollup -c rollup.config.js --watch",
