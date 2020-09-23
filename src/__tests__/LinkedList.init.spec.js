@@ -33,4 +33,20 @@ describe('init(items = [])', () => {
       },
     ])
   })
+
+  it('should init a well with only one item', () => {
+    const LL = localInstance()
+    LL.init([
+      {
+        id: '2',
+      },
+    ])
+
+    expect(LL.list).toEqual([
+      {
+        id: '2',
+        next: { id: null },
+      },
+    ])
+  })
 })

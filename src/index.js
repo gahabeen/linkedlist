@@ -29,7 +29,7 @@ export default class LinkedList {
   _init(list) {
     const ids = list.map(this._getId)
     const registry = new Map()
-    const sorted = []
+    let sorted = []
     const unsorted = new Map()
     let cursor = null
 
@@ -70,10 +70,14 @@ export default class LinkedList {
     }
 
     // retrieve remaining unsorted
-    const lost = [...Array.from(registry), ...Array.from(unsorted)].map(([_, idx]) => {
+    let lost = [...Array.from(registry), ...Array.from(unsorted)].map(([_, idx]) => {
       this._defaultNextId(list[idx])
       return list[idx]
     })
+
+    if (sorted.length === 0 && lost.length > 0) {
+      sorted = [lost.pop()]
+    }
 
     return {
       list: sorted.reverse(),
