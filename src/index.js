@@ -1,10 +1,7 @@
 export default class LinkedList {
   constructor(options = {}) {
-    /* istanbul ignore next */
     const { getId = (item) => item.id } = options
-    /* istanbul ignore next */
     const { getNextId = (item) => item.next } = options
-    /* istanbul ignore next */
     const { setNextId = (item, nextId) => (item.next = nextId) } = options
 
     this._list = []

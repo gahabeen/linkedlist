@@ -1,5 +1,5 @@
 {
-  "name": "@gahabeen/linkedin",
+  "name": "@gahabeen/linkedlist",
   "version": "0.1.0",
   "main": "dist/linkedlist.js",
   "module": "dist/linkedlist.esm.js",
