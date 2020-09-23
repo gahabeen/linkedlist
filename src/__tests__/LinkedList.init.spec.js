@@ -48,5 +48,7 @@ describe('init(items = [])', () => {
         next: { id: null },
       },
     ])
+
+    expect(LL.lost).toEqual([])
   })
 })
