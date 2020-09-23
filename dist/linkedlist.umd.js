@@ -1,5 +1,5 @@
 /*!
-  * @gahabeen/linkedlist v0.1.0
+  * @gahabeen/linkedlist v0.1.1
   * (c) 2020 Gabin Desserprit
   * @license MIT
   */
@@ -138,6 +138,13 @@
       }
 
       this._list.splice(index, 0, item);
+      return this
+    }
+
+    move(oldIndex, newIndex) {
+      const item = this._list[oldIndex];
+      this.remove(oldIndex);
+      this.insert(item, newIndex);
       return this
     }
 

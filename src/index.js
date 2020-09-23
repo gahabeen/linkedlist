@@ -130,6 +130,13 @@ export default class LinkedList {
     return this
   }
 
+  move(oldIndex, newIndex) {
+    const item = this._list[oldIndex]
+    this.remove(oldIndex)
+    this.insert(item, newIndex)
+    return this
+  }
+
   remove(index) {
     const previousItem = this._list[index - 1]
     const nextItem = this._list[index + 1]
