@@ -1,5 +1,5 @@
 /*!
-  * @gahabeen/linkedlist v0.1.1
+  * @gahabeen/linkedlist v0.1.2
   * (c) 2020 Gabin Desserprit
   * @license MIT
   */
@@ -34,7 +34,7 @@ class LinkedList {
   _init(list) {
     const ids = list.map(this._getId);
     const registry = new Map();
-    const sorted = [];
+    let sorted = [];
     const unsorted = new Map();
     let cursor = null;
 
@@ -75,10 +75,14 @@ class LinkedList {
     }
 
     // retrieve remaining unsorted
-    const lost = [...Array.from(registry), ...Array.from(unsorted)].map(([_, idx]) => {
+    let lost = [...Array.from(registry), ...Array.from(unsorted)].map(([_, idx]) => {
       this._defaultNextId(list[idx]);
       return list[idx]
     });
+
+    if (sorted.length === 0 && lost.length > 0) {
+      sorted = [lost.pop()];
+    }
 
     return {
       list: sorted.reverse(),
