@@ -4,6 +4,7 @@ export default class LinkedList {
     const { getNextId = (item) => item.next } = options
     const { setNextId = (item, nextId) => (item.next = nextId) } = options
 
+    this._list = []
     this._sorted = []
     this._unsorted = []
 
@@ -12,6 +13,11 @@ export default class LinkedList {
     this._getNextId = getNextId
     this._setNextId = setNextId
     this._watch = () => null
+  }
+
+  get list() {
+    /* istanbul ignore next */
+    return this._list
   }
 
   get sorted() {
@@ -96,6 +102,7 @@ export default class LinkedList {
     return {
       sorted: sorted.reverse(),
       unsorted: _unsorted,
+      list,
     }
   }
 
@@ -131,9 +138,10 @@ export default class LinkedList {
   }
 
   init(items = []) {
-    const { sorted, unsorted } = this._init(items.length > 0 ? items : this._sorted)
+    const { sorted, unsorted, list } = this._init(items.length > 0 ? items : this._sorted)
     this._sorted = sorted
     this._unsorted = unsorted
+    this._list = list
     this.emit()
 
     return this
