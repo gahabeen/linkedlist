@@ -21,6 +21,6 @@ describe('pop()', () => {
       id: '3',
       next: { id: null },
     })
-    expect(LL.list.length).toEqual(2)
+    expect(LL.sorted.length).toEqual(2)
   })
 })

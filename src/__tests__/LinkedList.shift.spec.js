@@ -18,6 +18,6 @@ describe('shift()', () => {
     ])
 
     expect(LL.shift()).toEqual({ id: '1', next: { id: '2' } })
-    expect(LL.list.length).toEqual(2)
+    expect(LL.sorted.length).toEqual(2)
   })
 })

@@ -18,7 +18,7 @@ describe('get lost()', () => {
       },
     ])
 
-    expect(LL.lost).toEqual([])
+    expect(LL.unsorted).toEqual([])
   })
 
   it('should get lost items in a list with 1 unreferenced item', () => {
@@ -41,7 +41,7 @@ describe('get lost()', () => {
       },
     ])
 
-    expect(LL.lost).toEqual([
+    expect(LL.unsorted).toEqual([
       {
         id: '4',
         next: { id: null },

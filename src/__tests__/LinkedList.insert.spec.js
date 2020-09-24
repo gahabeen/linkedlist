@@ -24,7 +24,7 @@ describe('insert(item, index)', () => {
       1
     )
 
-    expect(LL.list).toEqual([
+    expect(LL.sorted).toEqual([
       {
         id: '1',
         next: { id: '4' },

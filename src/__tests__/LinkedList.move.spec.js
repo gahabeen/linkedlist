@@ -19,7 +19,7 @@ describe('move(oldIndex, newIndex)', () => {
 
     LL.move(1, 0)
 
-    expect(LL.list).toEqual([
+    expect(LL.sorted).toEqual([
       {
         id: '2',
         next: { id: '1' },
@@ -53,7 +53,7 @@ describe('move(oldIndex, newIndex)', () => {
 
     LL.move(2, 1)
 
-    expect(LL.list).toEqual([
+    expect(LL.sorted).toEqual([
 
       {
         id: '1',
@@ -89,7 +89,7 @@ describe('move(oldIndex, newIndex)', () => {
 
     LL.move(1, 2)
 
-    expect(LL.list).toEqual([
+    expect(LL.sorted).toEqual([
 
       {
         id: '1',

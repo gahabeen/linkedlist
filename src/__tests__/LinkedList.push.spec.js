@@ -21,7 +21,7 @@ describe('push(item)', () => {
       id: '4',
     })
 
-    expect(LL.list).toEqual([
+    expect(LL.sorted).toEqual([
       {
         id: '1',
         next: { id: '2' },

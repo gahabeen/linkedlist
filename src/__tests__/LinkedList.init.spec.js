@@ -18,7 +18,7 @@ describe('init(items = [])', () => {
       },
     ])
 
-    expect(LL.list).toEqual([
+    expect(LL.sorted).toEqual([
       {
         id: '1',
         next: { id: '2' },
@@ -42,13 +42,13 @@ describe('init(items = [])', () => {
       },
     ])
 
-    expect(LL.list).toEqual([
+    expect(LL.sorted).toEqual([
       {
         id: '2',
         next: { id: null },
       },
     ])
 
-    expect(LL.lost).toEqual([])
+    expect(LL.unsorted).toEqual([])
   })
 })
