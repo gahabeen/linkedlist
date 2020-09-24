@@ -13,7 +13,8 @@ var GahabeenLinkedlist = (function () {
       const { setNextId = (item, nextId) => (item.next = nextId) } = options;
 
       this._list = [];
-      this._lost = [];
+      this._sorted = [];
+      this._unsorted = [];
 
       this._getId = getId;
       this._hasId = (item) => typeof this._getId(item) === 'string';
@@ -23,11 +24,16 @@ var GahabeenLinkedlist = (function () {
     }
 
     get list() {
+      /* istanbul ignore next */
       return this._list
     }
 
-    get lost() {
-      return this._lost
+    get sorted() {
+      return this._sorted
+    }
+
+    get unsorted() {
+      return this._unsorted
     }
 
     _defaultNextId(item) {
@@ -37,9 +43,9 @@ var GahabeenLinkedlist = (function () {
     }
 
     _inspectListLength() {
-      let length = this._list.length;
+      let length = this._sorted.length;
       return () => {
-        return this._list.length - length
+        return this._sorted.length - length
       }
     }
 
@@ -90,18 +96,21 @@ var GahabeenLinkedlist = (function () {
       }
 
       // retrieve remaining unsorted
-      let lost = [...Array.from(registry), ...Array.from(unsorted)].map(([_, idx]) => {
+      let _unsorted = [...Array.from(registry), ...Array.from(unsorted)].map(([_, idx]) => {
         this._defaultNextId(list[idx]);
         return list[idx]
       });
 
-      if (sorted.length === 0 && lost.length > 0) {
-        sorted = [lost.pop()];
+      // when only one item in list
+      if (sorted.length === 0 && _unsorted.length > 0) {
+        sorted = [_unsorted.pop()];
+        this._setNextId(sorted[0], null);
       }
 
       return {
-        list: sorted.reverse(),
-        lost,
+        sorted: sorted.reverse(),
+        unsorted: _unsorted,
+        list,
       }
     }
 
@@ -133,13 +142,14 @@ var GahabeenLinkedlist = (function () {
     }
 
     emit() {
-      this._watch({ list: this._list, lost: this._lost });
+      this._watch({ list: this._sorted, lost: this._unsorted });
     }
 
     init(items = []) {
-      const { list, lost } = this._init(items.length > 0 ? items : this._list);
+      const { sorted, unsorted, list } = this._init(items.length > 0 ? items : this._sorted);
+      this._sorted = sorted;
+      this._unsorted = unsorted;
       this._list = list;
-      this._lost = lost;
       this.emit();
 
       return this
@@ -150,8 +160,8 @@ var GahabeenLinkedlist = (function () {
 
       this._checkItem(item);
 
-      const previousItem = this._list[index - 1];
-      const nextItem = this._list[index];
+      const previousItem = this._sorted[index - 1];
+      const nextItem = this._sorted[index];
 
       if (previousItem) {
         this._referencePreviousItem(item, previousItem);
@@ -163,7 +173,7 @@ var GahabeenLinkedlist = (function () {
         this._setNextId(item, null);
       }
 
-      this._list.splice(index, 0, item);
+      this._sorted.splice(index, 0, item);
 
       const difference = inspectListLength();
       if (difference <= 0) {
@@ -179,17 +189,18 @@ var GahabeenLinkedlist = (function () {
     remove(index) {
       const inspectListLength = this._inspectListLength();
 
-      const previousItem = this._list[index - 1];
-      const nextItem = this._list[index + 1];
+      const previousItem = this._sorted[index - 1];
+      const nextItem = this._sorted[index + 1];
 
       if (previousItem) {
-        this._setNextId(previousItem, null);
         if (nextItem) {
           this._referencePreviousItem(nextItem, previousItem);
+        } else {
+          this._setNextId(previousItem, null);
         }
       }
 
-      this._list.splice(index, 1);
+      this._sorted.splice(index, 1);
 
       const difference = inspectListLength();
       if (difference >= 0) {
@@ -205,7 +216,7 @@ var GahabeenLinkedlist = (function () {
     move(oldIndex, newIndex) {
       const inspectListLength = this._inspectListLength();
 
-      const item = this._list[oldIndex];
+      const item = this._sorted[oldIndex];
       this.remove(oldIndex);
       this.insert(item, newIndex);
 
@@ -219,7 +230,7 @@ var GahabeenLinkedlist = (function () {
     }
 
     push(item) {
-      this.insert(item, this._list.length);
+      this.insert(item, this._sorted.length);
       return this
     }
 
@@ -229,14 +240,14 @@ var GahabeenLinkedlist = (function () {
     }
 
     pop() {
-      const lastIndex = this._list.length - 1;
-      const item = this._list[lastIndex];
+      const lastIndex = this._sorted.length - 1;
+      const item = this._sorted[lastIndex];
       this.remove(lastIndex);
       return item
     }
 
     shift() {
-      const item = this._list[0];
+      const item = this._sorted[0];
       this.remove(0);
       return item
     }
