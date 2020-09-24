@@ -127,14 +127,14 @@ export default class LinkedList {
 
   // This is actually covered
   /* istanbul ignore next*/
-  watch(callback = ({ list: [], lost: [] }) => null, { immediate = true } = {}) {
+  watch(callback = ({ sorted: [], unsorted: [], list: [] }) => null, { immediate = true } = {}) {
     this._watch = callback
     if (immediate) this.emit()
     return this
   }
 
   emit() {
-    this._watch({ list: this._sorted, lost: this._unsorted })
+    this._watch({ sorted: this.sorted, unsorted: this.unsorted, list: this.list })
   }
 
   init(items = []) {
