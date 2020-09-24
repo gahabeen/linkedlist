@@ -1,7 +1,7 @@
 {
   "name": "@gahabeen/linkedlist",
   "description": "Handle linked objects as flat list",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "main": "dist/linkedlist.js",
   "module": "dist/linkedlist.esm.js",
   "unpkg": "dist/linkedlist.iife.js",
