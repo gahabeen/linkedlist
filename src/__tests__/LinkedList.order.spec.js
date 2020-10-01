@@ -1,9 +1,9 @@
 import localInstance from './../../test/instance'
 
-describe('init(items = [])', () => {
-  it('should init a well referrenced list', () => {
+describe('order(items = [])', () => {
+  it('should order a well referrenced list', () => {
     const LL = localInstance()
-    LL.init([
+    LL.order([
       {
         id: '2',
         next: { id: '3' },
@@ -34,21 +34,32 @@ describe('init(items = [])', () => {
     ])
   })
 
-  it('should init well with only one item', () => {
+  it('should order an unwell referrenced list', () => {
     const LL = localInstance()
-    LL.init([
+    LL.order([
       {
         id: '2',
+        next: null,
+      },
+      {
+        id: '1',
+        next: { id: '2' },
+      },
+      {
+        id: '3',
+        next: { id: null },
       },
     ])
 
     expect(LL.sorted).toEqual([
       {
+        id: '1',
+        next: { id: '2' },
+      },
+      {
         id: '2',
-        next: { id: null },
+        next: null,
       },
     ])
-
-    expect(LL.unsorted).toEqual([])
   })
 })
