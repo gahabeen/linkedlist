@@ -1,5 +1,5 @@
 /*!
-  * @gahabeen/linkedlist v0.1.4
+  * @gahabeen/linkedlist v0.1.5
   * (c) 2020 Gabin Desserprit
   * @license MIT
   */
@@ -39,7 +39,7 @@
       return this._unsorted
     }
 
-    _defaultNextId(item) {
+    _defaultNextId(item = []) {
       if (!this._getNextId(item)) {
         this._setNextId(item, null);
       }
@@ -52,7 +52,7 @@
       }
     }
 
-    _init(list) {
+    _init(list, withMutation = false) {
       const ids = list.map((item) => {
         this._checkItem(item);
         return this._getId(item)
@@ -66,7 +66,7 @@
       for (let idx = 0; idx < list.length; idx++) {
         const item = list[idx];
         if (this._getNextId(item) == undefined || !ids.includes(this._getNextId(item))) {
-          item.next = null;
+          if (withMutation) this._setNextId(item, null);
           unsorted.set(this._getId(item), idx);
         } else {
           registry.set(this._getNextId(item), idx);
@@ -78,7 +78,7 @@
         if (registry.has(id)) {
           cursor = id;
           const _item = list[unsorted.get(id)];
-          this._defaultNextId(_item);
+          if (withMutation) this._defaultNextId(_item);
           sorted.push(_item);
           unsorted.delete(id);
           break
@@ -89,7 +89,7 @@
       while (cursor) {
         const nextItem = list[registry.get(cursor)];
         if (nextItem) {
-          this._defaultNextId(nextItem);
+          if (withMutation) this._defaultNextId(nextItem);
           sorted.push(nextItem);
           registry.delete(cursor);
           cursor = this._getId(nextItem);
@@ -100,14 +100,14 @@
 
       // retrieve remaining unsorted
       let _unsorted = [...Array.from(registry), ...Array.from(unsorted)].map(([_, idx]) => {
-        this._defaultNextId(list[idx]);
+        if (withMutation) this._defaultNextId(list[idx]);
         return list[idx]
       });
 
       // when only one item in list
       if (sorted.length === 0 && _unsorted.length > 0) {
         sorted = [_unsorted.pop()];
-        this._setNextId(sorted[0], null);
+        if (withMutation) this._setNextId(sorted[0], null);
       }
 
       return {
@@ -149,12 +149,22 @@
     }
 
     init(items = []) {
-      const { sorted, unsorted, list } = this._init(items.length > 0 ? items : this._sorted);
+      const { sorted, unsorted, list } = this._init(items.length > 0 ? items : this._sorted, true);
+
       this._sorted = sorted;
       this._unsorted = unsorted;
       this._list = list;
       this.emit();
 
+      return this
+    }
+
+    order(items = []) {
+      const { sorted, unsorted, list } = this._init(items, false);
+
+      this._sorted = sorted;
+      this._unsorted = unsorted;
+      this._list = list;
       return this
     }
 
