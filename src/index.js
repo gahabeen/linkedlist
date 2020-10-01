@@ -154,6 +154,8 @@ export default class LinkedList {
     this._sorted = sorted
     this._unsorted = unsorted
     this._list = list
+    this.emit()
+    
     return this
   }
 

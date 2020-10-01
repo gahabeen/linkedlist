@@ -1,5 +1,5 @@
 /*!
-  * @gahabeen/linkedlist v0.1.5
+  * @gahabeen/linkedlist v0.1.6
   * (c) 2020 Gabin Desserprit
   * @license MIT
   */
@@ -159,6 +159,8 @@ class LinkedList {
     this._sorted = sorted;
     this._unsorted = unsorted;
     this._list = list;
+    this.emit();
+    
     return this
   }
 
